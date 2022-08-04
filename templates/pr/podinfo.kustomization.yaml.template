@@ -1,0 +1,17 @@
+# This Kustomization was automatically generated from templates/pr/podinfo.kustomize.yaml.template
+# DO NOT MODIFY
+---
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+resources:
+  - ../dev/
+nameSuffix: -${PR_NAME}
+namespace: podinfo-${PR_NAME}
+patches:
+  - target:
+      kind: Ingress
+      name: podinfo-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: podinfo${PR_NAME}-${DNS}.sslip.io
