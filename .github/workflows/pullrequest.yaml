@@ -1,0 +1,27 @@
+name: Create temp environment for PR
+on:
+  workflow_dispatch:
+  pull_request:
+    #paths:
+    #- **/dev/**
+
+env:
+  PR_NAME: ${{ github.event.pull_request.number }}
+  DNS: 51-143-49-95
+
+jobs:
+  create-temp-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+      - run: envsubst < templates/pr/podinfo.kustomization.yaml.template > environments/westus2/pr/kustomization.yaml
+      - run: cat environments/westus2/pr/kustomization.yaml
+      - uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            🧪
+            Preview your deployed changes here!
+            https://podinfo${{ env.PR_NAME }}-${{ env.DNS }}.sslip.io
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: "github-actions[bot]"
